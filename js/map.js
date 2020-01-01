@@ -2,6 +2,7 @@ let MAX_LOCATION = 630, MIN_LOCATION = 130;
 let MAX_PRICE = 1000000, MIN_PRICE = 1000;
 let MAX_ROOMS = 5, MIN_ROOMS = 1;
 let MAX_AVATARS = 8, MIN_AVATARS = 1;
+let MAX_GUESTS = 5, MIN_GUESTS = 1
 // ARRAYS WITH DATA
 // START
 
@@ -28,10 +29,10 @@ let AVATARS = [
 ];
 
 let TYPE = [
-    'palace',
-    'flat',
-    'house',
-    'bungalo'
+    'Дворец',
+    'Квартира',
+    'Дом',
+    'Бунгало'
 ];
 
 let CHECKIN = [
@@ -66,7 +67,7 @@ let PHOTOS = [
 function isHave(arr, elem) {
     let flag = false;
     for(let i = 0; i < arr.length; i++) {
-        if(arr[i].author.avatar === elem) {
+        if(arr[i].author.avatar == elem) {
             flag = true;
             break;
         }
@@ -110,6 +111,10 @@ function randomItem(array) {
     return Math.floor(Math.random() * array.length);
 }
 
+function random(x) {
+    return Math.floor(Math.random() * x);
+}
+
 let list = (x) => {
     
     let ads = {
@@ -138,22 +143,15 @@ let list = (x) => {
 
     let arr = [];
     for(let i = 0; i < x; i++) {
-        let NW = Object.assign({}, ads);
-        // while(true)
-        // {
-        //     let random = Math.floor(Math.random() * (x -1))
-        //     if(!isHave(arr, TITLE[random])) {
-        //         NW.author.avatar = TITLE[random];
-        //         break;
-        //     }
-        // }
+        let NW = JSON.parse(JSON.stringify(ads));
+        NW.author.avatar = AVATARS[i];
         let offerAndLoc = {
             title: TITLE[randomItem(TITLE)],
             address: 'left: ' + location.x + 'px; top: ' + location.y + 'px;',
             price: Math.floor(Math.random() * (MAX_PRICE - MIN_PRICE) + MIN_PRICE),
             type: TYPE[randomItem(TYPE)],
             rooms: Math.floor(Math.random() * (MAX_ROOMS - MIN_ROOMS) + MIN_ROOMS),
-            guests: Math.floor(Math.random()),
+            guests: Math.floor(Math.random() * (MAX_GUESTS - MIN_GUESTS) + MIN_GUESTS),
             checkin: CHECKIN[Math.floor(Math.random() * CHECKIN.length)],
             checkout: CHECKOUT[Math.floor(Math.random() * CHECKOUT.length)],
             features: FEATURES[randomItem(FEATURES)],
@@ -175,8 +173,8 @@ let list = (x) => {
         NW.offer.features = (offerAndLoc.features);
         NW.offer.desctiption = (offerAndLoc.desctiption);
         NW.offer.photos = (offerAndLoc.photos);
-        NW.location.x = (offerAndLoc.location.x);
-        NW.location.y = (offerAndLoc.location.y);
+        NW.location.x = offerAndLoc.location.x;
+        NW.location.y = offerAndLoc.location.y;
         arr.push(NW);
     }
 
@@ -195,15 +193,19 @@ function outputElement(x) {
         let card = elem.content.querySelector('.map__card').cloneNode(true);
         let pin = elem.content.querySelector('.map__pin').cloneNode(true);
         // fragment.querySelector('.popup__avatar').src = arr[i].author.avatar;
+        card.querySelector('.popup__avatar').src = arr[random(x)].author.avatar;
         card.querySelector('h3').innerHTML = arr[i].offer.title;
-        card.querySelector('.popup__price').innerHTML = arr[i].offer.price + '' /* + '&#x20bd;/ночь' */ ;
+        card.querySelector('.popup__price').innerHTML = arr[i].offer.price + '₽ ночь' /* + '&#x20bd;/ночь' */ ;
         card.querySelector('h4').innerHTML = arr[i].offer.type;
         card.querySelector('.rooms').innerHTML = arr[i].offer.rooms + ' комнаты для ' + arr[i].offer.guests + ' гостей';
         card.querySelector('.check').innerHTML = 'Заезд после ' + arr[i].offer.checkin + ', выезд до ' + arr[i].offer.checkout;
+        pin.querySelector('.pin__image').src = arr[i].author.avatar;
+        pin.style = 'left: ' + arr[i].location.x + 'px; top: ' + arr[i].location.y + 'px;';
         // fragment.querySelector('') Для дополнительных элементов
         // card.querySelector('.map__pin').style = arr[i].offer.address;
         // fragment.querySelector('.pin__image').src = arr[i].author.avatar;
         apnd.appendChild(card);
+        apnd.appendChild(pin);
     }
 }
 
